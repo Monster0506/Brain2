@@ -6,8 +6,8 @@ import Login from "./components/Login";
 import NotesList from "./components/NotesList";
 import NoteDetail from "./components/NoteDetail";
 import NoteForm from "./components/NoteForm";
-import BookmarksList from "./components/BookmarksList";
-import FoldersList from "./components/FoldersList";
+// import BookmarksList from "./components/BookmarksList";
+// import FoldersList from "./components/FoldersList";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {

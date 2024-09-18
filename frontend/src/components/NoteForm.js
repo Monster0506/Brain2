@@ -13,13 +13,7 @@ const NoteForm = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    if (id) {
-      fetchNote();
-    }
-  }, [id]);
-
-  const fetchNote = async () => {
+  const fetchNote = async (id) => {
     const { data, error } = await supabase
       .from("notes")
       .select("*")
@@ -34,6 +28,11 @@ const NoteForm = () => {
       setTags(data.tags.join(", ")); // assuming tags are stored as an array
     }
   };
+  useEffect(() => {
+    if (id) {
+      fetchNote();
+    }
+  }, [id]);
 
   const handleSave = async (e) => {
     e.preventDefault();
