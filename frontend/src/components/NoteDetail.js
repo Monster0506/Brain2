@@ -13,11 +13,7 @@ const NoteDetail = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [updatedContent, setUpdatedContent] = useState("");
 
-  useEffect(() => {
-    fetchNote();
-  }, [id]);
-
-  const fetchNote = async () => {
+  const fetchNote = async (id) => {
     const { data, error } = await supabase
       .from("notes")
       .select("*")
@@ -32,6 +28,10 @@ const NoteDetail = () => {
     }
     setLoading(false);
   };
+
+  useEffect(() => {
+    fetchNote();
+  }, [id]);
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
