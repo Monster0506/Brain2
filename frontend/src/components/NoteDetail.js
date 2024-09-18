@@ -1,27 +1,112 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
-const fetchLinkedNotes = async () => {
-  const { data: linkedNotes } = await supabase
-    .from("links")
-    .select("to_note(*)")
-    .eq("from_note", note.id);
+const NoteDetail = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [note, setNote] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [updatedContent, setUpdatedContent] = useState("");
 
-  const { data: backlinks } = await supabase
-    .from("links")
-    .select("from_note(*)")
-    .eq("to_note", note.id);
+  useEffect(() => {
+    fetchNote();
+  }, [id]);
 
-  // ... set state for linkedNotes and backlinks
-};
-const fetchNotes = async (searchTerm) => {
-  let query = supabase.from("notes").select("*");
-  if (searchTerm) {
-    query = query.ilike("title", `%${searchTerm}%`);
+  const fetchNote = async () => {
+    const { data, error } = await supabase
+      .from("notes")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      setError(error.message);
+    } else {
+      setNote(data);
+      setUpdatedContent(data.content);
+    }
+    setLoading(false);
+  };
+
+  const handleEditToggle = () => {
+    setIsEditing(!isEditing);
+  };
+
+  const handleSave = async () => {
+    const { error } = await supabase
+      .from("notes")
+      .update({ content: updatedContent, updated_at: new Date() })
+      .eq("id", id);
+
+    if (error) {
+      setError(error.message);
+    } else {
+      setNote({ ...note, content: updatedContent });
+      setIsEditing(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    const { error } = await supabase.from("notes").delete().eq("id", id);
+
+    if (error) {
+      setError(error.message);
+    } else {
+      navigate("/");
+    }
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
   }
-  const { data, error } = await query;
-  // ... handle data and error
+
+  if (error) {
+    return <div className="text-red-500">{error}</div>;
+  }
+
+  return (
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">{note.title}</h1>
+
+      {isEditing ? (
+        <ReactQuill value={updatedContent} onChange={setUpdatedContent} />
+      ) : (
+        <div className="prose max-w-none">
+          <div dangerouslySetInnerHTML={{ __html: note.content }} />
+        </div>
+      )}
+
+      <div className="mt-6 flex space-x-4">
+        {isEditing ? (
+          <button
+            onClick={handleSave}
+            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+          >
+            Save
+          </button>
+        ) : (
+          <button
+            onClick={handleEditToggle}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Edit
+          </button>
+        )}
+
+        <button
+          onClick={handleDelete}
+          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  );
 };
 
-const exports = { fetchLinkedNotes, fetchNotes };
-export default exports;
+export default NoteDetail;

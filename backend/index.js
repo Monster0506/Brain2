@@ -9,6 +9,7 @@ const foldersRoutes = require("./routes/folders");
 const tagsRoutes = require("./routes/tags");
 const versionsRoutes = require("./routes/versions");
 const remindersRoutes = require("./routes/reminders");
+const bookmarksRoutes = require("./routes/bookmarks");
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use("/folders", foldersRoutes);
 app.use("/tags", tagsRoutes);
 app.use("/versions", versionsRoutes);
 app.use("/reminders", remindersRoutes);
+app.use("/bookmarks", bookmarksRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

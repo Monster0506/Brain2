@@ -1,12 +1,14 @@
-// src/App.js
+// App.js
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Signup from "./components/Signup";
+import Login from "./components/Login";
 import NotesList from "./components/NotesList";
 import NoteDetail from "./components/NoteDetail";
-import Login from "./components/Login";
-import Signup from "./components/Signup";
+import NoteForm from "./components/NoteForm";
+import BookmarksList from "./components/BookmarksList";
+import FoldersList from "./components/FoldersList";
 import ProtectedRoute from "./components/ProtectedRoute";
-// ... import other components
 
 function App() {
   return (
@@ -14,11 +16,21 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+
+        {/* Protected Routes */}
         <Route
           path="/"
           element={
             <ProtectedRoute>
               <NotesList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/notes/new"
+          element={
+            <ProtectedRoute>
+              <NoteForm />
             </ProtectedRoute>
           }
         />
@@ -30,7 +42,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        {/* ... other routes */}
+        {/* Add other protected routes similarly */}
       </Routes>
     </Router>
   );
